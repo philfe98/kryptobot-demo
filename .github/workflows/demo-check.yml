@@ -1,0 +1,32 @@
+name: Demo checks
+on:
+  push:
+  pull_request:
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check HTML structure and JavaScript syntax
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class Checker(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids = set()
+              def handle_starttag(self, tag, attrs):
+                  a = dict(attrs)
+                  if 'id' in a:
+                      assert a['id'] not in self.ids, 'duplicate id: ' + a['id']
+                      self.ids.add(a['id'])
+          source = Path('index.html').read_text()
+          p = Checker()
+          p.feed(source)
+          assert '<script>' in source and '</script>' in source
+          assert 'apiKey' not in source and 'secretKey' not in source
+          Path('/tmp/demo.js').write_text(source.split('<script>',1)[1].split('</script>',1)[0])
+          print('HTML parsed, unique IDs:', len(p.ids))
+          PY
+          node --check /tmp/demo.js
