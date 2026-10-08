@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kryptobot · Demo</title>
+<style>
+:root{font:16px system-ui,sans-serif;color-scheme:dark;background:#090f1b;color:#edf3fc}
+*{box-sizing:border-box}body{max-width:1000px;margin:auto;padding:22px 16px}
+header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+h1{margin:0;font-size:1.6rem}h2{font-size:1.05rem;margin:0 0 16px}
+.tag{border:1px solid #416389;border-radius:100px;padding:6px 10px;color:#a8c8f0;font-size:.78rem}
+.panel{background:#142035;border:1px solid #293d58;border-radius:16px;padding:18px;margin-top:18px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end}label{display:grid;gap:6px;font-size:.85rem;color:#c0cde0}
+select,button{background:#233854;color:#fff;border:1px solid #4b6585;border-radius:9px;padding:11px;font:inherit}
+button{cursor:pointer}button:disabled{opacity:.6}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+@media(min-width:700px){.metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.metric{background:#0c1728;padding:14px;border-radius:11px;min-width:0}
+.metric span{font-size:.78rem;color:#9fb0c7}.metric strong{display:block;margin-top:8px;font-size:1.2rem;overflow-wrap:anywhere}
+#chart{width:100%;height:240px}#status{min-height:1.5em;color:#a8b9d0}
+.up{color:#60d6a0}.down{color:#ff9f9f}.muted,footer{color:#9caec7;font-size:.84rem}
+</style></head>
+<body>
+<header><h1>◈ Kryptobot</h1><span class="tag">Öffentliche Demo · Keine Trades</span></header>
+<section class="panel"><h2>Marktübersicht</h2>
+<div class="controls">
+<label>Handelspaar<select id="pair"><option>BTCUSDT</option><option>ETHUSDT</option><option>SOLUSDT</option><option>BNBUSDT</option><option>XRPUSDT</option><option>ADAUSDT</option><option>DOGEUSDT</option><option>LINKUSDT</option></select></label>
+<label>Zeitrahmen<select id="interval"><option value="4h">4 Stunden</option><option value="1d">1 Tag</option></select></label>
+<button id="refresh">Aktualisieren</button>
+</div>
+<p id="status" role="status" aria-live="polite">Bereit</p>
+<div class="metrics">
+<div class="metric"><span>Letzter Schlusskurs</span><strong id="price">–</strong></div>
+<div class="metric"><span>EMA 50</span><strong id="ema50">–</strong></div>
+<div class="metric"><span>EMA 200</span><strong id="ema200">–</strong></div>
+<div class="metric"><span>Trend</span><strong id="trend">–</strong></div>
+</div></section>
+<section class="panel"><h2>Schlusskurse</h2><svg id="chart" viewBox="0 0 900 240" role="img" aria-label="Historische Schlusskurse"></svg><p class="muted">Die letzte, noch laufende Kerze wird ausgeschlossen. Trend: Kurs &gt; EMA50 &gt; EMA200 = Aufwärtstrend; umgekehrt Abwärtstrend.</p></section>
+<footer>Nur öffentliche Binance Spot-Marktdaten. Keine API-Schlüssel, kein Portfolio, keine Kauf- oder Verkaufsaufträge. Die Daten können verzögert oder regional nicht verfügbar sein. Keine Anlageberatung.</footer>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const format=n=>Number.isFinite(n)?n.toLocaleString('de-CH',{maximumFractionDigits:6}):'–';
+function ema(values,n){if(values.length<n)return null;let e=values.slice(0,n).reduce((a,b)=>a+b,0)/n;const k=2/(n+1);for(let i=n;i<values.length;i++)e=values[i]*k+e*(1-k);return e;}
+function draw(values){
+const svg=$('chart');svg.replaceChildren();if(values.length<2)return;
+const min=Math.min(...values),max=Math.max(...values),range=max-min||1;
+const ns='http://www.w3.org/2000/svg',p=document.createElementNS(ns,'polyline');
+p.setAttribute('points',values.map((v,i)=>[15+i*870/(values.length-1),215-(v-min)*185/range].join(',')).join(' '));
+p.setAttribute('fill','none');p.setAttribute('stroke','#62a8ff');p.setAttribute('stroke-width','2.5');svg.append(p);
+}
+let controller=null;
+async function refresh(){
+if(controller)controller.abort();controller=new AbortController();const signal=controller.signal;
+const pair=$('pair').value,interval=$('interval').value;
+$('refresh').disabled=true;$('status').textContent='Lade öffentliche Binance-Kursdaten …';
+try{
+const url='https://data-api.binance.vision/api/v3/klines?symbol='+encodeURIComponent(pair)+'&interval='+encodeURIComponent(interval)+'&limit=250';
+const response=await fetch(url,{signal,cache:'no-store'});
+if(!response.ok)throw Error('Binance antwortet mit HTTP '+response.status);
+const rows=await response.json();if(!Array.isArray(rows))throw Error('Ungültige Antwort');
+const now=Date.now(),complete=rows.filter(r=>Number(r[6])<now);
+const values=complete.map(r=>Number(r[4]));if(values.length<200||values.some(x=>!Number.isFinite(x)))throw Error('Zu wenig gültige Kursdaten');
+const e50=ema(values,50),e200=ema(values,200),last=values.at(-1);
+const trend=last>e50&&e50>e200?'Aufwärtstrend':last<e50&&e50<e200?'Abwärtstrend':'Neutral';
+$('price').textContent=format(last)+' USDT';$('ema50').textContent=format(e50);$('ema200').textContent=format(e200);
+$('trend').textContent=trend;$('trend').className=trend==='Aufwärtstrend'?'up':trend==='Abwärtstrend'?'down':'';
+draw(values);$('status').textContent=complete.length+' abgeschlossene Kerzen · '+pair+' · '+interval+' · Quelle: Binance';
+}catch(error){
+if(error.name==='AbortError')return;
+$('status').textContent='Abruf fehlgeschlagen: '+error.message+'. Eventuell ist Binance in deinem Netzwerk nicht erreichbar.';
+['price','ema50','ema200','trend'].forEach(id=>$(id).textContent='–');$('chart').replaceChildren();
+}finally{if(!signal.aborted)$('refresh').disabled=false;}
+}
+$('refresh').addEventListener('click',refresh);
+$('pair').addEventListener('change',refresh);
+$('interval').addEventListener('change',refresh);
+refresh();
+</script></body></html>
