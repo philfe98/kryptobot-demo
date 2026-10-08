@@ -1,79 +1,109 @@
 <!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kryptobot · Demo</title>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a1120"><title>Kryptobot · Markt & Paper Trading</title>
 <style>
-:root{font:16px system-ui,sans-serif;color-scheme:dark;background:#090f1b;color:#edf3fc}
-*{box-sizing:border-box}body{max-width:1000px;margin:auto;padding:22px 16px}
-header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
-h1{margin:0;font-size:1.6rem}h2{font-size:1.05rem;margin:0 0 16px}
-.tag{border:1px solid #416389;border-radius:100px;padding:6px 10px;color:#a8c8f0;font-size:.78rem}
-.panel{background:#142035;border:1px solid #293d58;border-radius:16px;padding:18px;margin-top:18px}
-.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end}label{display:grid;gap:6px;font-size:.85rem;color:#c0cde0}
-select,button{background:#233854;color:#fff;border:1px solid #4b6585;border-radius:9px;padding:11px;font:inherit}
-button{cursor:pointer}button:disabled{opacity:.6}
-.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
-@media(min-width:700px){.metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.metric{background:#0c1728;padding:14px;border-radius:11px;min-width:0}
-.metric span{font-size:.78rem;color:#9fb0c7}.metric strong{display:block;margin-top:8px;font-size:1.2rem;overflow-wrap:anywhere}
-#chart{width:100%;height:240px}#status{min-height:1.5em;color:#a8b9d0}
-.up{color:#60d6a0}.down{color:#ff9f9f}.muted,footer{color:#9caec7;font-size:.84rem}
-</style></head>
-<body>
-<header><h1>◈ Kryptobot</h1><span class="tag">Öffentliche Demo · Keine Trades</span></header>
+:root{font:15px system-ui,sans-serif;color-scheme:dark;background:#090f1b;color:#eaf1ff}*{box-sizing:border-box}
+body{max-width:1120px;margin:auto;padding:16px}header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{font-size:1.6rem;margin:4px 0}h2{font-size:1.1rem;margin:0 0 14px}h3{font-size:1rem;margin:12px 0}
+.tag{border:1px solid #406286;border-radius:30px;color:#b9d6ff;padding:7px 11px;font-size:.76rem}
+.panel{background:#142035;border:1px solid #30435e;border-radius:17px;padding:17px;margin:15px 0}
+.controls{display:flex;flex-wrap:wrap;align-items:end;gap:10px}
+label{display:grid;gap:5px;color:#b9c8dd;font-size:.84rem}
+select,input,button{background:#223752;color:#f2f7ff;border:1px solid #4b6586;border-radius:9px;padding:10px;font:inherit;min-height:42px}
+button{cursor:pointer}button:disabled{opacity:.5}button.primary{background:#2466a7}button.danger{border-color:#a95d68}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:13px}
+@media(min-width:780px){.metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.metric{background:#0c1728;border-radius:11px;padding:13px;min-width:0}
+.metric span{font-size:.76rem;color:#a2b4cd}.metric strong{display:block;margin-top:6px;font-size:1.13rem;overflow-wrap:anywhere}
+.good{color:#66e0ae!important}.bad{color:#ff9d9d!important}.muted,footer{color:#a4b5cc;font-size:.82rem}
+#chart{display:block;width:100%;height:auto;aspect-ratio:900/350;background:#0b1627;border-radius:10px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem;color:#bacbe1;margin:8px 0}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
+.split{display:grid;grid-template-columns:1fr;gap:14px}@media(min-width:780px){.split{grid-template-columns:1fr 1fr}}
+table{width:100%;border-collapse:collapse;font-size:.82rem}th,td{text-align:left;border-bottom:1px solid #30435e;padding:9px 5px}th{color:#afc0d8}td:last-child,th:last-child{text-align:right}
+.notice{border-left:3px solid #72a9e8;padding:8px 12px;background:#10263c;color:#b9d3ee;font-size:.82rem}
+#status{min-height:1.4em;color:#b3c8e5}footer{line-height:1.6;padding:12px 2px 28px}
+</style></head><body>
+<header><h1>◈ Kryptobot</h1><span class="tag">Öffentliche Demo · Nur Simulation</span></header>
 <section class="panel"><h2>Marktübersicht</h2>
-<div class="controls">
-<label>Handelspaar<select id="pair"><option>BTCUSDT</option><option>ETHUSDT</option><option>SOLUSDT</option><option>BNBUSDT</option><option>XRPUSDT</option><option>ADAUSDT</option><option>DOGEUSDT</option><option>LINKUSDT</option></select></label>
-<label>Zeitrahmen<select id="interval"><option value="4h">4 Stunden</option><option value="1d">1 Tag</option></select></label>
-<button id="refresh">Aktualisieren</button>
+<div class="controls"><label>Handelspaar<select id="pair"><option>BTCUSDT</option><option>ETHUSDT</option><option>SOLUSDT</option><option>BNBUSDT</option><option>XRPUSDT</option><option>ADAUSDT</option><option>DOGEUSDT</option><option>LINKUSDT</option></select></label>
+<label>Zeitrahmen<select id="interval"><option value="4h">4 Stunden</option><option value="1d">1 Tag</option><option value="1h">1 Stunde</option></select></label>
+<button id="refresh" class="primary">Aktualisieren</button></div>
+<p id="status" role="status" aria-live="polite">Lade Marktdaten …</p>
+<div class="metrics"><div class="metric"><span>Schlusskurs</span><strong id="price">–</strong></div><div class="metric"><span>EMA 50</span><strong id="ema50">–</strong></div><div class="metric"><span>EMA 200</span><strong id="ema200">–</strong></div><div class="metric"><span>Trend</span><strong id="trend">–</strong></div></div>
+</section>
+<section class="panel"><h2>Kerzenchart mit Trendlinien</h2><svg id="chart" viewBox="0 0 900 350" role="img" aria-label="Historische Kerzen mit EMA 50 und EMA 200"></svg>
+<div class="legend"><span><i class="dot" style="background:#5de0aa"></i>Steigende Kerze</span><span><i class="dot" style="background:#fa8295"></i>Fallende Kerze</span><span><i class="dot" style="background:#5ca9ff"></i>EMA 50</span><span><i class="dot" style="background:#e5b96d"></i>EMA 200</span></div>
+<p class="muted">Nur abgeschlossene Kerzen. Trendregel: Kurs &gt; EMA 50 &gt; EMA 200 = aufwärts, umgekehrt = abwärts. Sonst neutral.</p></section>
+<div class="split">
+<section class="panel"><h2>Trend-Signal</h2><div class="metrics"><div class="metric"><span>Einordnung</span><strong id="signal">–</strong></div><div class="metric"><span>Abstand EMA 200</span><strong id="distance">–</strong></div></div><p id="reason" class="muted">Daten werden geladen.</p><div class="notice">Das Signal ist eine vereinfachte technische Einordnung, keine automatische Handelsentscheidung.</div></section>
+<section class="panel"><h2>Historischer Strategietest</h2><p class="muted">EMA-50/200-Trendfolge, nur Long. Einstieg und Ausstieg zum nächsten Kerzen-Open nach Signal. 0,1 % Gebühr je Transaktion, kein Slippage-Modell. Keine Optimierung.</p>
+<button id="backtest" disabled>Backtest berechnen</button>
+<div class="metrics"><div class="metric"><span>Strategie</span><strong id="btReturn">–</strong></div><div class="metric"><span>Buy & Hold</span><strong id="holdReturn">–</strong></div><div class="metric"><span>Trades</span><strong id="trades">–</strong></div><div class="metric"><span>Max. Drawdown</span><strong id="drawdown">–</strong></div></div>
+<p class="muted" id="btInfo">Der Test umfasst nur die aktuell geladenen Kerzen. Vergangene Resultate sagen nichts über künftige Erträge aus.</p></section>
 </div>
-<p id="status" role="status" aria-live="polite">Bereit</p>
-<div class="metrics">
-<div class="metric"><span>Letzter Schlusskurs</span><strong id="price">–</strong></div>
-<div class="metric"><span>EMA 50</span><strong id="ema50">–</strong></div>
-<div class="metric"><span>EMA 200</span><strong id="ema200">–</strong></div>
-<div class="metric"><span>Trend</span><strong id="trend">–</strong></div>
-</div></section>
-<section class="panel"><h2>Schlusskurse</h2><svg id="chart" viewBox="0 0 900 240" role="img" aria-label="Historische Schlusskurse"></svg><p class="muted">Die letzte, noch laufende Kerze wird ausgeschlossen. Trend: Kurs &gt; EMA50 &gt; EMA200 = Aufwärtstrend; umgekehrt Abwärtstrend.</p></section>
-<footer>Nur öffentliche Binance Spot-Marktdaten. Keine API-Schlüssel, kein Portfolio, keine Kauf- oder Verkaufsaufträge. Die Daten können verzögert oder regional nicht verfügbar sein. Keine Anlageberatung.</footer>
+<section class="panel"><h2>Paper-Trading · 250 CHF virtuell</h2><p class="muted">Lokale Simulation in diesem Browser. Keine Börsenverbindung, keine echten Orders. Alle Werte werden näherungsweise in CHF geführt, mit einem separat abgerufenen USD/CHF-Kurs.</p>
+<div class="metrics"><div class="metric"><span>Virtuelles Guthaben</span><strong id="cash">–</strong></div><div class="metric"><span>Positionswert</span><strong id="positions">–</strong></div><div class="metric"><span>Gesamtwert</span><strong id="equity">–</strong></div><div class="metric"><span>Performance</span><strong id="pnl">–</strong></div></div>
+<p id="fxStatus" class="muted">Wechselkurs wird geladen …</p>
+<div class="controls"><label>Betrag in CHF<input id="amount" type="number" min="1" step="1" value="25" inputmode="decimal"></label>
+<button id="buy" class="primary" disabled>Virtuell kaufen</button><button id="sell" disabled>Position vollständig verkaufen</button><button id="reset" class="danger">Portfolio zurücksetzen</button></div>
+<p id="paperStatus" role="status" aria-live="polite" class="muted">Startkapital: 250 CHF. Gebührenmodell: 0,1 % pro Kauf oder Verkauf.</p>
+<h3>Offene Positionen</h3><div style="overflow-x:auto"><table><thead><tr><th>Paar</th><th>Menge</th><th>Wert CHF</th></tr></thead><tbody id="holdings"></tbody></table></div>
+<h3>Letzte Transaktionen</h3><div style="overflow-x:auto"><table><thead><tr><th>Zeit</th><th>Aktion</th><th>CHF</th></tr></thead><tbody id="history"></tbody></table></div>
+</section>
+<footer>Marktdaten: öffentliche Binance-Spot-Schnittstelle. USD/CHF: öffentlicher Wechselkursdienst. Kursdaten können verzögert, regional gesperrt oder nicht verfügbar sein. Paper-Daten bleiben ausschliesslich im lokalen Browser-Speicher und werden nicht mit anderen Geräten synchronisiert. Browserdaten löschen entfernt das Portfolio. Kein Live-Trading, keine Schlüssel, keine Anlageberatung.</footer>
 <script>
 'use strict';
-const $=id=>document.getElementById(id);
-const format=n=>Number.isFinite(n)?n.toLocaleString('de-CH',{maximumFractionDigits:6}):'–';
-function ema(values,n){if(values.length<n)return null;let e=values.slice(0,n).reduce((a,b)=>a+b,0)/n;const k=2/(n+1);for(let i=n;i<values.length;i++)e=values[i]*k+e*(1-k);return e;}
-function draw(values){
-const svg=$('chart');svg.replaceChildren();if(values.length<2)return;
-const min=Math.min(...values),max=Math.max(...values),range=max-min||1;
-const ns='http://www.w3.org/2000/svg',p=document.createElementNS(ns,'polyline');
-p.setAttribute('points',values.map((v,i)=>[15+i*870/(values.length-1),215-(v-min)*185/range].join(',')).join(' '));
-p.setAttribute('fill','none');p.setAttribute('stroke','#62a8ff');p.setAttribute('stroke-width','2.5');svg.append(p);
+const $=id=>document.getElementById(id), fee=.001, storageKey='kryptobot-paper-v2';
+let candles=[], controller, fx=null, currentPair='', prices={}, state=load();
+function load(){try{const v=JSON.parse(localStorage.getItem(storageKey));if(v&&Number.isFinite(v.cash)&&v.cash>=0&&v.holdings&&typeof v.holdings==='object'&&Array.isArray(v.history))return v;}catch(e){}return {cash:250,holdings:{},history:[]};}
+function save(){try{localStorage.setItem(storageKey,JSON.stringify(state));}catch(e){$('paperStatus').textContent='Speichern im Browser nicht möglich.';}}
+function fmt(n,d=2){return Number.isFinite(n)?n.toLocaleString('de-CH',{minimumFractionDigits:d,maximumFractionDigits:d}):'–';}
+function emaSeries(a,n){let out=Array(a.length).fill(null),s=0,e;for(let i=0;i<a.length;i++){if(i<n){s+=a[i];if(i===n-1){e=s/n;out[i]=e;}}else{e=e+(a[i]-e)*2/(n+1);out[i]=e;}}return out;}
+function line(svg,points,color,width){const el=document.createElementNS('http://www.w3.org/2000/svg','polyline');el.setAttribute('points',points.join(' '));el.setAttribute('fill','none');el.setAttribute('stroke',color);el.setAttribute('stroke-width',width);svg.append(el);}
+function draw(){const svg=$('chart');svg.replaceChildren();if(!candles.length)return;
+const visible=candles.slice(-110),values=candles.map(x=>x.close),e50=emaSeries(values,50).slice(-110),e200=emaSeries(values,200).slice(-110);
+const low=Math.min(...visible.map(x=>x.low),...e200.filter(Number.isFinite)),high=Math.max(...visible.map(x=>x.high),...e200.filter(Number.isFinite));
+const y=v=>315-(v-low)/(high-low||1)*280,x=i=>30+i*840/(visible.length-1);
+for(let i=0;i<5;i++){const v=low+(high-low)*i/4;const text=document.createElementNS('http://www.w3.org/2000/svg','text');text.setAttribute('x','35');text.setAttribute('y',String(y(v)-4));text.setAttribute('fill','#8ea5c0');text.setAttribute('font-size','12');text.textContent=fmt(v,Math.abs(v)<10?3:0);svg.append(text);}
+visible.forEach((c,i)=>{const col=c.close>=c.open?'#5de0aa':'#fa8295';const wick=document.createElementNS('http://www.w3.org/2000/svg','line');wick.setAttribute('x1',x(i));wick.setAttribute('x2',x(i));wick.setAttribute('y1',y(c.high));wick.setAttribute('y2',y(c.low));wick.setAttribute('stroke',col);svg.append(wick);
+const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');rect.setAttribute('x',x(i)-2.7);rect.setAttribute('y',Math.min(y(c.open),y(c.close)));rect.setAttribute('width','5.4');rect.setAttribute('height',Math.max(1,Math.abs(y(c.open)-y(c.close))));rect.setAttribute('fill',col);svg.append(rect);});
+for(const [series,color] of [[e50,'#5ca9ff'],[e200,'#e5b96d']]){let segment=[];series.forEach((v,i)=>{if(Number.isFinite(v))segment.push(x(i)+','+y(v));else if(segment.length){line(svg,segment,color,2);segment=[];}});if(segment.length)line(svg,segment,color,2);}
 }
-let controller=null;
-async function refresh(){
-if(controller)controller.abort();controller=new AbortController();const signal=controller.signal;
-const pair=$('pair').value,interval=$('interval').value;
-$('refresh').disabled=true;$('status').textContent='Lade öffentliche Binance-Kursdaten …';
-try{
-const url='https://data-api.binance.vision/api/v3/klines?symbol='+encodeURIComponent(pair)+'&interval='+encodeURIComponent(interval)+'&limit=250';
-const response=await fetch(url,{signal,cache:'no-store'});
-if(!response.ok)throw Error('Binance antwortet mit HTTP '+response.status);
-const rows=await response.json();if(!Array.isArray(rows))throw Error('Ungültige Antwort');
-const now=Date.now(),complete=rows.filter(r=>Number(r[6])<now);
-const values=complete.map(r=>Number(r[4]));if(values.length<200||values.some(x=>!Number.isFinite(x)))throw Error('Zu wenig gültige Kursdaten');
-const e50=ema(values,50),e200=ema(values,200),last=values.at(-1);
-const trend=last>e50&&e50>e200?'Aufwärtstrend':last<e50&&e50<e200?'Abwärtstrend':'Neutral';
-$('price').textContent=format(last)+' USDT';$('ema50').textContent=format(e50);$('ema200').textContent=format(e200);
-$('trend').textContent=trend;$('trend').className=trend==='Aufwärtstrend'?'up':trend==='Abwärtstrend'?'down':'';
-draw(values);$('status').textContent=complete.length+' abgeschlossene Kerzen · '+pair+' · '+interval+' · Quelle: Binance';
-}catch(error){
-if(error.name==='AbortError')return;
-$('status').textContent='Abruf fehlgeschlagen: '+error.message+'. Eventuell ist Binance in deinem Netzwerk nicht erreichbar.';
-['price','ema50','ema200','trend'].forEach(id=>$(id).textContent='–');$('chart').replaceChildren();
-}finally{if(!signal.aborted)$('refresh').disabled=false;}
+function classify(price,e50,e200){return price>e50&&e50>e200?'Aufwärtstrend':price<e50&&e50<e200?'Abwärtstrend':'Neutral';}
+function backtest(){if(candles.length<205)return;let cash=250,qty=0,entries=0,peak=250,dd=0;const closes=candles.map(c=>c.close),a=emaSeries(closes,50),b=emaSeries(closes,200);
+for(let i=200;i<candles.length;i++){const buy=closes[i-1]>a[i-1]&&a[i-1]>b[i-1],open=candles[i].open;
+if(buy&&qty===0){qty=cash*(1-fee)/open;cash=0;entries++;}
+else if(!buy&&qty>0){cash=qty*open*(1-fee);qty=0;}
+const equity=cash+qty*candles[i].close;peak=Math.max(peak,equity);dd=Math.max(dd,(peak-equity)/peak);}
+const final=cash+qty*candles.at(-1).close*(qty?1-fee:1),hold=250*candles.at(-1).close/candles[200].open*(1-fee)*(1-fee);
+$('btReturn').textContent=fmt((final/250-1)*100)+' %';$('holdReturn').textContent=fmt((hold/250-1)*100)+' %';$('trades').textContent=String(entries);$('drawdown').textContent=fmt(dd*100)+' %';
+$('btInfo').textContent='Zeitraum: '+new Date(candles[200].time).toLocaleDateString('de-CH')+' bis '+new Date(candles.at(-1).time).toLocaleDateString('de-CH')+'. '+(candles.length-200)+' getestete Kerzen. Keine Slippage; Schlussposition wird für Vergleich rechnerisch liquidiert.';}
+function renderPaper(){let total=state.cash;const rows=[];for(const [pair,qty] of Object.entries(state.holdings)){if(!(qty>0))continue;const price=prices[pair];const value=Number.isFinite(price)&&fx?qty*price*fx:null;if(value!==null)total+=value;rows.push('<tr><td>'+pair+'</td><td>'+fmt(qty,7)+'</td><td>'+(value===null?'Kurs fehlt':fmt(value))+'</td></tr>');}
+$('cash').textContent=fmt(state.cash)+' CHF';$('positions').textContent=fx?fmt(total-state.cash)+' CHF':'–';$('equity').textContent=fx?fmt(total)+' CHF':'–';$('pnl').textContent=fx?fmt(total-250)+' CHF ('+fmt((total/250-1)*100)+' %)':'–';
+$('holdings').innerHTML=rows.join('')||'<tr><td colspan="3">Keine offenen Positionen</td></tr>';
+$('history').replaceChildren();for(const h of state.history.slice(-8).reverse()){const tr=document.createElement('tr');for(const v of [new Date(h.time).toLocaleString('de-CH'),h.action+' '+h.pair,fmt(h.amount)]){const td=document.createElement('td');td.textContent=v;tr.append(td);}$('history').append(tr);}
+const available=candles.length>0&&fx>0;$('buy').disabled=!available;$('sell').disabled=!available||!(state.holdings[$('pair').value]>0);
 }
-$('refresh').addEventListener('click',refresh);
-$('pair').addEventListener('change',refresh);
-$('interval').addEventListener('change',refresh);
-refresh();
+async function refreshFX(){try{const r=await fetch('https://open.er-api.com/v6/latest/USD',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();if(!Number.isFinite(d.rates?.CHF)||d.rates.CHF<=0)throw Error('Ungültiger Kurs');fx=d.rates.CHF;$('fxStatus').textContent='USD/CHF: '+fmt(fx,4)+' · Quelle: ExchangeRate-API · Referenzkurs, kein ausführbarer Wechselkurs';}catch(e){fx=null;$('fxStatus').textContent='USD/CHF nicht verfügbar: Paper-Trading deaktiviert ('+e.message+').';}renderPaper();}
+async function refresh(){if(controller)controller.abort();controller=new AbortController();const signal=controller.signal;const pair=$('pair').value,interval=$('interval').value;
+$('refresh').disabled=true;$('backtest').disabled=true;$('buy').disabled=true;$('sell').disabled=true;$('status').textContent='Lade Binance-Kerzen …';candles=[];draw();
+try{const url='https://data-api.binance.vision/api/v3/klines?symbol='+encodeURIComponent(pair)+'&interval='+encodeURIComponent(interval)+'&limit=500';const r=await fetch(url,{signal,cache:'no-store'});if(!r.ok)throw Error('Binance HTTP '+r.status);const raw=await r.json();if(!Array.isArray(raw))throw Error('Ungültige Daten');
+const now=Date.now();candles=raw.filter(x=>Number(x[6])<now).map(x=>({time:Number(x[0]),open:Number(x[1]),high:Number(x[2]),low:Number(x[3]),close:Number(x[4])})).filter(x=>[x.time,x.open,x.high,x.low,x.close].every(Number.isFinite)&&x.open>0&&x.close>0);
+if(candles.length<205)throw Error('Zu wenige abgeschlossene Kerzen');const close=candles.map(x=>x.close),e50=emaSeries(close,50).at(-1),e200=emaSeries(close,200).at(-1),last=close.at(-1),trend=classify(last,e50,e200);
+currentPair=pair;prices[pair]=last;$('price').textContent=fmt(last,last<1?5:2)+' USDT';$('ema50').textContent=fmt(e50,last<1?5:2);$('ema200').textContent=fmt(e200,last<1?5:2);
+$('trend').textContent=trend;$('trend').className=trend==='Aufwärtstrend'?'good':trend==='Abwärtstrend'?'bad':'';
+$('signal').textContent=trend==='Aufwärtstrend'?'Long-Filter aktiv':trend==='Abwärtstrend'?'Abwarten':'Kein Signal';$('distance').textContent=fmt((last/e200-1)*100)+' %';
+$('reason').textContent='EMA 50 '+(e50>e200?'liegt über':'liegt nicht über')+' EMA 200. Der Schlusskurs liegt '+(last>e50?'über':'unter oder auf')+' EMA 50. Ein Trendfilter allein ist kein Einstiegssignal.';
+$('status').textContent=candles.length+' abgeschlossene Kerzen · '+pair+' · '+interval+' · Binance';draw();$('backtest').disabled=false;backtest();renderPaper();
+}catch(e){if(e.name==='AbortError')return;$('status').textContent='Marktdaten nicht verfügbar: '+e.message;['price','ema50','ema200','trend','signal','distance','btReturn','holdReturn','trades','drawdown'].forEach(id=>$(id).textContent='–');$('chart').replaceChildren();renderPaper();}
+finally{if(!signal.aborted)$('refresh').disabled=false;}}
+function transact(kind){if(!fx||!candles.length||currentPair!==$('pair').value)return;const pair=currentPair,price=candles.at(-1).close*fx,amount=Number($('amount').value);
+if(kind==='buy'){if(!Number.isFinite(amount)||amount<=0||amount>state.cash){$('paperStatus').textContent='Bitte einen gültigen Betrag innerhalb des Guthabens eingeben.';return;}const qty=amount*(1-fee)/price;state.cash-=amount;state.holdings[pair]=(state.holdings[pair]||0)+qty;state.history.push({time:Date.now(),action:'Kauf',pair,amount});}
+else{const qty=state.holdings[pair]||0;if(qty<=0)return;const proceeds=qty*price*(1-fee);state.cash+=proceeds;delete state.holdings[pair];state.history.push({time:Date.now(),action:'Verkauf',pair,amount:proceeds});}
+state.cash=Math.max(0,state.cash);save();$('paperStatus').textContent='Virtueller '+(kind==='buy'?'Kauf':'Verkauf')+' gespeichert. Ausführung zum letzten abgeschlossenen Schlusskurs, nicht zum Live-Kurs.';renderPaper();}
+$('refresh').addEventListener('click',refresh);$('pair').addEventListener('change',refresh);$('interval').addEventListener('change',refresh);$('backtest').addEventListener('click',backtest);
+$('buy').addEventListener('click',()=>transact('buy'));$('sell').addEventListener('click',()=>transact('sell'));
+$('reset').addEventListener('click',()=>{if(!confirm('Virtuelles Portfolio und Transaktionen wirklich zurücksetzen?'))return;state={cash:250,holdings:{},history:[]};save();renderPaper();$('paperStatus').textContent='Portfolio auf 250 CHF zurückgesetzt.';});
+refreshFX();refresh();
 </script></body></html>
